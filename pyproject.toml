@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "physics-benchmark"
+version = "0.1.0"
+description = "Physics problem and image benchmark simulation with vLLM serving"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2,<3",
+    "PyYAML>=6,<7",
+]
+
+[project.optional-dependencies]
+# Install on the Linux/CUDA inference host. Let vLLM select compatible
+# torch/transformers versions rather than pinning them independently.
+vllm = [
+    "vllm>=0.8.5,<1",
+]
+openrouter = [
+    "openai>=1",
+    "python-dotenv>=1,<2",
+]
+gemini = [
+    "google-genai>=1",
+    "python-dotenv>=1,<2",
+]
+ngrok = [
+    "pyngrok"
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src", "src.*"]
+namespaces = true

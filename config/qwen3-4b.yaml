@@ -1,0 +1,26 @@
+# 문제 본문·선택지·이미지를 받아 풀이 단계와 정답을 생성하는 단일 모델 설정
+model_path: Qwen/Qwen3-VL-4B-Instruct
+
+# ParallelVLLMEngine 생성자 인자
+vllm:
+  gpus_per_instance: 1
+  n_instances: 1
+  gpu_ids: [2]
+  gpu_memory_utilization: 0.8
+  max_model_len: 12000
+  max_num_seqs: 4
+  enable_sleep_mode: false
+  enable_prefix_caching: true
+  limit_mm_per_prompt:
+    image: 8  # 문제당 허용 이미지 수 (현재 dataset 최대 4장)
+
+# vLLM SamplingParams 인자
+sampling:
+  temperature: 0.7
+  max_tokens: 8192
+  seed: 42
+  n: 1
+  top_p: 0.8
+  top_k: 20
+  repetition_penalty: 1.0
+  presence_penalty: 1.5

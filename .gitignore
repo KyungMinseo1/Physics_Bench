@@ -1,0 +1,27 @@
+# 출력 결과물
+*outputs/
+
+# 데이터셋
+dataset/
+data/
+
+# Python egg-info
+*.egg-info/
+
+# 문서 폴더
+docs/
+
+# 테스트 폴더
+tests/
+
+# 캐시 폴더
+__pycache__/
+*.pyc
+
+# 환경 설정 파일
+.env
+
+# Agent Config
+.agents/
+.aws/
+.codex/

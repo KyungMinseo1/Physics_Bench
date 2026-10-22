@@ -1,0 +1,27 @@
+{
+  "model_path": "Qwen/Qwen2.5-VL-7B-Instruct",
+  "vllm": {
+    "gpus_per_instance": 1,
+    "n_instances": 1,
+    "gpu_ids": [
+      0
+    ],
+    "gpu_memory_utilization": 0.8,
+    "max_model_len": 12000,
+    "max_num_seqs": 4,
+    "enable_sleep_mode": false,
+    "enable_prefix_caching": true,
+    "limit_mm_per_prompt": {
+      "image": 8
+    }
+  },
+  "sampling": {
+    "temperature": 0.7,
+    "max_tokens": 8192,
+    "seed": 42,
+    "top_p": 0.8,
+    "top_k": 20,
+    "repetition_penalty": 1.05,
+    "presence_penalty": 0.0
+  }
+}
