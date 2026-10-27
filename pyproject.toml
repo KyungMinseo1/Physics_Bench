@@ -13,6 +13,9 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+evaluation = [
+    "sympy>=1.13,<2",
+]
 # Install on the Linux/CUDA inference host. Let vLLM select compatible
 # torch/transformers versions rather than pinning them independently.
 vllm = [
@@ -34,3 +37,6 @@ ngrok = [
 where = ["."]
 include = ["src", "src.*"]
 namespaces = true
+
+[tool.setuptools.package-data]
+"src.evaluation" = ["editor.html"]

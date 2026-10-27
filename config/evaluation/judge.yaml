@@ -1,0 +1,11 @@
+# Actual calls incur API charges. Credentials stay in environment variables.
+provider: gemini
+model: gemini-3.5-flash-lite
+api_key_env: GEMINI_API_KEY
+thinking_level: high
+max_output_tokens: 8192
+
+# Final-answer grading only: rules (no API) or llm (Gemini).
+# Objective answers always use exact choice_id matching.
+final_answer:
+  method: rules
