@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 from pathlib import Path
 from typing import Any, Protocol, Sequence
@@ -33,6 +34,53 @@ class VLLMBackend:
 
     def shutdown(self) -> None:
         self.engine.shutdown()
+
+
+class OpenRouterBackend:
+    """Sequential multimodal API inference, without the legacy role registry."""
+
+    def __init__(self, config: dict[str, Any]) -> None:
+        from dotenv import load_dotenv
+        from openai import OpenAI
+
+        load_dotenv(Path(__file__).resolve().parents[2] / ".env")
+        options = config.get("openrouter", {})
+        key_env = options.get("api_key_env", "OPENROUTER_API_KEY")
+        api_key = os.environ.get(key_env)
+        if not api_key or api_key == "YOUR_OPENROUTER_API_KEY":
+            raise ValueError(f"Set {key_env} in the project .env or environment")
+        self.model = config["model_path"]
+        self.sampling = {"max_tokens": 4096, **config.get("sampling", {})}
+        allowed = {"temperature", "top_p", "max_tokens", "seed", "n",
+                   "presence_penalty", "frequency_penalty"}
+        if self.sampling.keys() - allowed:
+            raise ValueError(f"Unsupported OpenRouter sampling keys: {sorted(self.sampling.keys() - allowed)}")
+        if self.sampling.get("n", 1) != 1:
+            raise ValueError("Simulation requires sampling.n=1")
+        self.extra_body = options.get("extra_body", {})
+        if self.extra_body.keys() - {"reasoning", "provider"}:
+            raise ValueError("OpenRouter extra_body supports only reasoning and provider")
+        self.client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=api_key,
+                             max_retries=0, timeout=options.get("timeout", 120))
+
+    def generate(self, prompts: list[list[dict[str, Any]]]) -> list[dict[str, Any]]:
+        responses = []
+        for prompt in prompts:
+            try:
+                completion = self.client.chat.completions.create(
+                    model=self.model, messages=prompt, **self.sampling,
+                    extra_body=self.extra_body,
+                )
+                choice = completion.choices[0]
+                responses.append({"text": choice.message.content or "",
+                                  "finish_reason": choice.finish_reason})
+            except Exception as exc:
+                # Keep earlier successes and avoid logging request headers/API keys.
+                responses.append({"text": "", "error": f"OpenRouter request failed ({type(exc).__name__})"})
+        return responses
+
+    def shutdown(self) -> None:
+        self.client.close()
 
 
 def normalize_latex_escapes(text: str) -> str:

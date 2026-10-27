@@ -41,14 +41,23 @@ python -m pip install -e ".[vllm,openrouter,gemini]"
 
 vLLM이 호환되는 PyTorch와 Transformers 버전을 설치하므로 두 패키지를 별도로
 고정하지 않습니다. 테스트는 표준 라이브러리 `unittest`를 사용해 추가 의존성이 없습니다.
-기존 API/registry 모듈이 참조하는 `src.contracts`는 현재 저장소에 없으므로,
-API 선택 의존성 설치만으로 해당 모듈의 실행이 완성되지는 않습니다.
+기존 API/registry 모듈이 참조하는 `src.contracts`는 현재 저장소에 없습니다.
+시뮬레이션의 OpenRouterBackend는 해당 모듈에 의존하지 않고 독립적으로 실행합니다.
 현재 로컬 검증 환경에는 vLLM/GPU 의존성이 없습니다.
 
-`config/models.yaml`에서 이미지 입력이 가능한 모델 경로, GPU 배치와 생성 길이를
+`config/`의 YAML에서 이미지 입력이 가능한 모델 경로, GPU 배치와 생성 길이를
 지정합니다. 기존 tutor/student/judge 역할 설정은 현재 시뮬레이션에 맞춰
 단일 모델의 `model_path`, `vllm`, `sampling` 구조로 통합했습니다.
 다른 설정은 `--config 경로`로 지정할 수 있으며 YAML과 JSON을 지원합니다.
+`provider`를 생략하면 `vllm`, `provider: openrouter`이면 원격 API를 사용합니다.
+OpenRouter는 프로젝트 루트의 `.env`에서 키를 읽습니다. 기존 환경변수가 우선합니다.
+`.env.example`을 `.env`로 복사하고 실제 키를 넣으세요. 유료 호출이므로
+`--limit 2`로 시작하고 사용량을 확인하세요. 자동 재시도는 하지 않습니다.
+
+```bash
+python -m src.simulation --config config/openrouter-gpt-5-mini.yaml --limit 2 --batch-size 1 --output temp_outputs/gpt-5-mini-sample-1.jsonl
+```
+
 `vllm` 항목은 `ParallelVLLMEngine` 생성자 인자이며, `sampling` 항목은
 vLLM `SamplingParams` 인자입니다. 한 문제당 한 응답(`n=1`)을 사용합니다.
 `limit_mm_per_prompt.image`는 문제당 최대 이미지 수 이상이어야 합니다.

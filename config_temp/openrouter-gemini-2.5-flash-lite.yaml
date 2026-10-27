@@ -1,0 +1,11 @@
+# Official model/pricing: https://openrouter.ai/google/gemini-2.5-flash-lite
+# Paid API: start with --limit 2 --batch-size 1.
+# Sampling/thinking omitted to use provider defaults; output budget is project-specific.
+provider: openrouter
+model_path: google/gemini-2.5-flash-lite
+openrouter:
+  api_key_env: OPENROUTER_API_KEY
+  timeout: 120
+sampling:
+  max_tokens: 4096
+  n: 1

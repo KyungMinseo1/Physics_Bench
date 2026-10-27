@@ -8,7 +8,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from .data import DEFAULT_PROMPT_PATH, build_prompt, load_problems, load_system_prompt
-from .runner import VLLMBackend, run_simulation
+from .runner import OpenRouterBackend, VLLMBackend, run_simulation
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -23,14 +23,16 @@ def load_config(path: Path) -> dict:
         config = json.loads(text)
     if not isinstance(config, dict) or not isinstance(config.get("model_path"), str) or not config["model_path"].strip():
         raise ValueError("Configuration requires a non-empty model_path string")
-    for key in ("vllm", "sampling"):
+    if config.get("provider", "vllm") not in {"vllm", "openrouter"}:
+        raise ValueError("Configuration provider must be vllm or openrouter")
+    for key in ("vllm", "sampling", "openrouter"):
         if key in config and not isinstance(config[key], dict):
             raise ValueError(f"Configuration {key} must be a mapping")
     return config
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Solve benchmark questions with their images using vLLM")
+    parser = argparse.ArgumentParser(description="Solve benchmark questions with images using vLLM or OpenRouter")
     parser.add_argument("--dataset", type=Path, default=ROOT / "dataset/annotations.jsonl")
     parser.add_argument("--image-root", type=Path)
     parser.add_argument("--config", type=Path, default=ROOT / "config/qwen2.5-7b.yaml")
@@ -67,7 +69,7 @@ def main() -> int:
     output = args.output or ROOT / "outputs" / f"simulation-{stamp}.jsonl"
     if output.exists():
         parser.error(f"Output already exists: {output}; choose a new --output")
-    backend = VLLMBackend(config)
+    backend = OpenRouterBackend(config) if config.get("provider") == "openrouter" else VLLMBackend(config)
     try:
         counts = run_simulation(problems, backend, output, model=config["model_path"], batch_size=args.batch_size,
                                 system_prompt=system_prompt)

@@ -1,0 +1,11 @@
+# Model and current prices: https://openrouter.ai/openai/gpt-4.1-mini
+# Paid API. Start with --limit 2 --batch-size 1. No automatic request retries.
+provider: openrouter
+model_path: openai/gpt-4.1-mini
+openrouter:
+  api_key_env: OPENROUTER_API_KEY
+  timeout: 120
+sampling:
+  max_tokens: 4096
+  n: 1
+  temperature: 0.0

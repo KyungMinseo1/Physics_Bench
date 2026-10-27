@@ -1,0 +1,27 @@
+# Official model card: https://huggingface.co/OpenGVLab/InternVL3_5-8B
+# Multimodal image+text; configure gpu_ids for your assigned GPU.
+# Sampling follows the model-card LMDeploy demo (0.6 / 0.95 / 50).
+# The project system prompt does not enable the optional Thinking mode.
+# max_tokens/context/concurrency are project budgets, not model-card recommendations.
+provider: vllm
+model_path: OpenGVLab/InternVL3_5-8B
+vllm:
+  gpus_per_instance: 1
+  n_instances: 1
+  gpu_ids:
+  - 0
+  gpu_memory_utilization: 0.8
+  max_model_len: 12000
+  max_num_seqs: 1
+  enable_sleep_mode: false
+  enable_prefix_caching: true
+  limit_mm_per_prompt:
+    image: 8
+sampling:
+  temperature: 0.6
+  max_tokens: 4096
+  seed: 42
+  n: 1
+  top_p: 0.95
+  top_k: 50
+  repetition_penalty: 1.0

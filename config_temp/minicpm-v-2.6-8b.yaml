@@ -1,0 +1,26 @@
+# Official model card: https://huggingface.co/openbmb/MiniCPM-V-2_6
+# Multimodal image+text; configure gpu_ids for your assigned GPU.
+# Greedy evaluation baseline, not a task-validated optimum.
+# max_tokens/context/concurrency are project budgets, not model-card recommendations.
+provider: vllm
+model_path: openbmb/MiniCPM-V-2_6
+vllm:
+  gpus_per_instance: 1
+  n_instances: 1
+  gpu_ids:
+  - 0
+  gpu_memory_utilization: 0.8
+  max_model_len: 12000
+  max_num_seqs: 1
+  enable_sleep_mode: false
+  enable_prefix_caching: true
+  limit_mm_per_prompt:
+    image: 8
+sampling:
+  temperature: 0.0
+  max_tokens: 4096
+  seed: 42
+  n: 1
+  top_p: 1.0
+  top_k: -1
+  repetition_penalty: 1.0
